@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Giphy API</title>
+</head>
+
+<body>
+        <div class="container">
+                <h1>Giphy Search</h1>
+            
+                <div id="buttons-view"></div>
+            
+                <form id="Gifs-form">
+                  <label for="Giphy-input">Add a Giphy!</label>
+                  <input type="text" id="Giphy-input">
+                  <br>
+            
+                
+                  <input id="add-Gifs" type="submit" value="Add a Giphy!">
+                </form>
+            
+               
+                <div id="gifs-view"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    var Gifs = ["Soccer", "Tennis", "baseball"];
+    
+    function displayGifs(){
+        var searchTerm = $(this).text();
+            $('#gifs-view').empty();
+            var queryURL = "https://api.giphy.com/v1/gifs/search?q="+ searchTerm +"&api_key=Dd0FA9kn9efh2Isj3wPn4lebYzlp3aXd&limit=10";
+            
+            $.ajax({
+            url: queryURL,
+            method: "GET"
+            }).then(function(response) {
+            console.log(response);
+            var gifs = response.data;
+            gifs.forEach((e) => {
+                var GifDiv = $("<div>");
+
+                var GifURL = e.images.original_still.url;
+                var image = $("<img>").attr("src", GifURL);
+                image.attr('still', GifURL );
+                image.attr('unStill',e.images.original.url );
+                image.addClass('gifImg');
+                image.attr('data-still', 'true');
+                GifDiv.append(image);
+                $("#gifs-view").prepend(GifDiv);
+
+            });
+           
+
+
+            });
+    }
+function renderButtons() {
+
+
+$("#buttons-view").empty();
+
+for (var i = 0; i < Gifs.length; i++) {
+
+  var a = $("<button>");
+  a.addClass("gif-btn");
+ 
+  a.attr("data-name",Gifs[i]);
+ 
+  a.text(Gifs[i]);
+ 
+  $("#buttons-view").append(a);
+}
+}
+
+
+$("#add-Gifs").on("click", function(event) {
+event.preventDefault();
+
+var Gif = $("#Giphy-input").val().trim();
+
+Gifs.push(Gif);
+
+renderButtons();
+});
+
+$(document).on('click', '.gifImg', function(){
+    
+    if( $(this).attr('data-still') == 'true') {
+        $(this).attr('src', $(this).attr('unStill'));
+        $(this).attr("data-still", 'false');
+    } else {
+        $(this).attr('src', $(this).attr('still'));
+        $(this).attr("data-still", 'true');
+    }
+});
+
+$(document).on("click", ".gif-btn", displayGifs);
+
+
+renderButtons();
+
+  </script>
+
+</body>
+
+</html>
